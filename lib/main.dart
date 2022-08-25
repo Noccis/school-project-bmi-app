@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'dart:math';
 
 void main() {
   runApp(const MyApp());
@@ -10,11 +11,12 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'BMI calculator',
+      debugShowCheckedModeBanner: false,
+      title: 'BMI kalkylator',
       theme: ThemeData(
         primarySwatch: Colors.lightGreen,
       ),
-      home: const MyHomePage(title: 'BMI calculator'),
+      home: const MyHomePage(title: 'BMI kalkylator'),
     );
   }
 }
@@ -22,14 +24,7 @@ class MyApp extends StatelessWidget {
 class MyHomePage extends StatefulWidget {
   const MyHomePage({Key? key, required this.title}) : super(key: key);
 
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
 
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
 
   final String title;
 
@@ -38,16 +33,50 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
-  String _test = 'Här är jag';
 
-  void _calculateBmi(){
+  double _bmiNumber = 0.0;
+  String _kategori = '';
+  
+
+  // Controllers:
+  final heightController = TextEditingController();
+  final weightController = TextEditingController();
+
+  void _calculateBmi() {
+    final heightInputText = heightController.text;
+    final weightInputText = weightController.text;
+
+    final height = double.parse(heightInputText);
+    final weight = double.parse(weightInputText);
+
+    final double result = weight / pow(height / 100,2);
     print('calculate Bmi running');
-    // setState(() {
-      
-    // });
-  }
+    
+    
+    setState(() {
+      _bmiNumber = double.parse(result.toStringAsFixed(1));
+      heightController.text = '';
+      weightController.text = '';
 
+      if(result <= 18.5){
+      _kategori = 'underviktig';
+      }else if(result > 18.5 && result <= 24.9){
+        _kategori = 'Ok enligt samhället';
+      }else if(result >24.9 && result <=29.9){
+        _kategori = 'Överviktig';
+      }else if(result > 29.9 && result <= 34.9){
+        _kategori = 'Fetma';
+      }else if(result >34.9 && result > 35){
+        _kategori = 'Extrem fetma';
+      }else{
+        _kategori = 'Försök igen';
+      }
+      
+    });
+  }
+  
+
+  
 
   @override
   Widget build(BuildContext context) {
@@ -59,9 +88,7 @@ class _MyHomePageState extends State<MyHomePage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: <Widget>[
-            Text(
-              _test,
-            ),
+            Text('Skriv in längd och vikt för att räkna ut BMI'),
             Card(
               child: SizedBox(
                 width: 300,
@@ -69,19 +96,40 @@ class _MyHomePageState extends State<MyHomePage> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
-                  Text('BMI siffra'),
-                  Text('Kategori'),
+                  Text('$_bmiNumber',
+                  style: const TextStyle(fontSize: 40),),
+                  const Padding(padding: EdgeInsets.all(8)),
+                  Text(_kategori),
                 ]),
               ),
             ),
-            Text('Här ska input fälten vara'),
+            Column(children: <Widget>[
+              TextField(
+              decoration: const InputDecoration(
+                border: OutlineInputBorder(),
+                hintText: 'Enter height:'
+              ),
+              controller: heightController,
+            ),
+            TextField(
+              decoration: const InputDecoration(
+                border: OutlineInputBorder(),
+                hintText: 'Enter weight:'
+              ),
+              controller: weightController,
+            ),
+            const Padding(padding: EdgeInsets.all(10)),
             ElevatedButton(
               onPressed: _calculateBmi, 
               child: const Text('Calculate'),
               ),
+            ],)
+            
           ],
         ),
       ),
     );
   }
 }
+
+
