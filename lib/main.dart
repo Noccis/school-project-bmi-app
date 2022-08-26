@@ -100,10 +100,12 @@ class _MyHomePageState extends State<MyHomePage> {
                 child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
+                      _bmiNumber > 0 ?
                       Text(
                         '$_bmiNumber',
                         style: const TextStyle(fontSize: 40),
-                      ),
+                      ) :
+                      const Text(''),
                       const Padding(padding: EdgeInsets.all(8)),
                       Text(_kategori),
                     ]),
